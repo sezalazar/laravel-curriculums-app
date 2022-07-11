@@ -1,0 +1,234 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\Applicant;
+use App\Models\Phone;
+
+use Alert;
+use Illuminate\Support\Facades\Auth;
+
+class ApplicantsController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        $cvs = Applicant::paginate(50);
+
+        return view('applicants/index', ['cvs' => $cvs]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('applicants/create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'dni' => 'required|integer|min:0|max:99999999',
+            'nombre' => 'required',
+            'email' => 'required',
+            // 'phone' => 'required',
+            'fechaDeNacimiento' => 'required',
+            'ciudad' => 'required',
+            'provincia' => 'required',
+            'cp' => 'required',
+            // 'image' => 'required|mimes:jpg,png,jpeg|max:5048'
+            'file' => 'required|mimes:pdf,doc,docx,odt|max:5048',
+        ]);
+
+        // $marStatus = $request->input('gridRadios');
+        // if ($marStatus == 1){
+        //     $marStatus = "casado";
+        // }
+        // if ($marStatus == 2){
+        //     $marStatus = "soltero";
+        // }
+        // if ($marStatus == 3){
+        //     $marStatus = "divorciado";
+        // }
+        // if ($marStatus == 4){
+        //     $marStatus = "viudo";
+        // }
+        // if ($marStatus == 5){
+        //     $marStatus = "otro";
+        // }
+
+         $request->input('driverLicence') ? $driverLicence = 1 : $driverLicence = 0;
+         $request->input('carOwner') ? $carOwner = 1 : $carOwner = 0;
+
+         if($request->input('driverLicence'))
+            $driverLicence = 1;
+         else
+            $driverLicence = 0;
+
+        if($request->input('carOwner'))
+            $carOwner = 1;
+         else
+            $carOwner = 0;
+
+        // dd($request);
+
+
+
+
+
+        $time = date("Y-m-d h:i:s a", time());
+        $time = str_replace(':', '_', $time);
+
+        $fileName = $time.'.'.$request->file->getClientOriginalName();
+        $request->file->move(public_path('uploads'), $fileName);
+
+        $cv = Applicant::create([
+            'dni' => $request->input('dni'),
+            'name' => $request->input('nombre'),
+            'email' => $request->input('email'),
+            // 'marStatus' => $marStatus,
+            // 'phone' => $request->input('phone'),
+            'city' => $request->input('ciudad'),
+            'provincia' => $request->input('provincia'),
+            'cp' => $request->input('cp'),
+            'dateOfBirth' => $request->input('fechaDeNacimiento'),
+            'referred' => $request->input('referred'),
+            'driverLicence' => $driverLicence,
+            'carOwner' => $carOwner,
+            'filename' => $fileName,
+            'file_path' => storage_path(),
+            'user' => Auth::user()->id,
+            // 'user_id' => auth()->user()->id
+
+
+        ]);
+
+        foreach ($request->input('phone') as $phone) {
+            $cvPhone =    Phone::create([
+                'dni' => $request->input('dni'),
+                'phone' => $phone
+            ]);
+        }
+
+        $applicantID = 0;
+        if (Auth::check()) {
+            $applicantID = Applicant::where('user', Auth::user()->id)->get();
+        }
+
+
+        session()->flash("success", "Su información ha sido cargada con éxito");
+        return view('/home')->with(compact('applicantID'));
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        // $applicantID = Applicant::where('user', $id)->exists();
+        $applicantID = Applicant::where('user', $id)->get();
+        return view('/home')->with(compact('applicantID'));
+    }
+
+
+    /**
+     * Display if user has uploaded a cv.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showbutton()
+    {
+        $applicantID = 0;
+        if (Auth::check()) {
+            $exists = Applicant::where('user', Auth::user()->id)->exists();
+            if ($exists)
+                $applicantID = Applicant::where('user', Auth::user()->id)->get();
+        }
+        return view('/home')->with(compact('applicantID'));
+    }
+
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $CV = Applicant::where('user', $id)->firstOrFail();
+
+        $CV->dni;
+        $phones = Phone::where('dni', $CV->dni)->get();
+
+        return view('/applicants/edit'
+             , ['cv'=>$CV], ['phones'=>$phones]
+        ); // del lado del view se llama 'marca'
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $modelApplicant = new Applicant;
+        $modelPhone = new Phone;
+        $applicantID = $modelApplicant->getApplicantId();
+        $validator = $modelApplicant->validateApplicantData($request, $id);
+        if ($validator->fails())
+        {
+            return redirect('applicants/'.Auth::user()->id.'/edit')->withErrors($validator)->withInput();
+        }
+        else{
+            $applicant = Applicant::where('dni', $request['dni'])->get();
+            $modelApplicant->validateApplicantFileData($request, 2);
+            $modelPhone->deletePhones($id);
+            $modelApplicant->updateApplicantData($id, $request->all());
+            $applicantID = $modelApplicant->getApplicantId();
+            session()->flash("success", "Su información ha sido actualizada con éxito");
+            return view('/home')->with('success','Su curriculum ha sido cargado satisfactoriamente.')->with(compact('applicantID'));
+        // }
+   }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

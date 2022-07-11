@@ -1,0 +1,312 @@
+@extends('layouts.aysaLayout')
+
+
+
+    @section('app-styles')
+        <link rel="stylesheet" href="{{ asset('/css/sections.css') }}">
+    @endsection
+
+@section('aysa-content')
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    <strong>Oops!</strong> There were some problems with your input.<br><br>
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+@if ($message = Session::get('success'))
+{{-- <div class="alert alert-success">
+    {{ $message
+    }}
+</div> --}}
+<script>
+
+    Swal.fire(
+        'Excelente!',
+        'El curriculum ha sido enviado!',
+        'success'
+      )
+    </script>
+@endif
+
+
+<div class="container ">
+
+
+    <form action="{{ route('applicants.store') }}"  method="POST" enctype="multipart/form-data">
+        @csrf
+      <div id="wizard">
+      <p style="margin-top: 5px"></p>
+      <span class="alert alert-success" role="alert">Datos Personales</span>
+      <p style="margin-top: 10px"></p>
+      <section>
+        <div style="border: 1px solid gray">
+            <div class="form-group row spacingForm">
+                <p style="margin-top: 5px"></p>
+            <label for="inputIdentity" class="col-sm-2 col-form-label">Nro Documento</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="dni" id="inputIdentity" placeholder="Ingrese su número de identidad" />
+            </div>
+            </div>
+            <div class="form-group row spacingForm">
+            <label for="inputName" class="col-sm-2 col-form-label">Nombre y Apellido</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputName" name="name" placeholder="Ingrese su nombre completo" />
+            </div>
+            </div>
+            <div class="form-group row spacingForm">
+            <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="inputEmail" name="email" placeholder="Ingrese su email" />
+            </div>
+            </div>
+            {{-- <fieldset class="form-group">
+            <div class="row spacingForm">
+                <span class="col-form-label col-sm-2 pt-0">Estado civil</span>
+                <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="1" />
+                    <label class="form-check-label" for="gridRadios1">Casada/o</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="2" />
+                    <label class="form-check-label" for="gridRadios2">Soltera/o</label>
+                </div>
+                <div class="form-check disabled">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="3" />
+                    <label class="form-check-label" for="gridRadios3">Divorciada/o</label>
+                </div>
+                <div class="form-check disabled">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios4" value="4" />
+                    <label class="form-check-label" for="gridRadios3">Viuda/o</label>
+                </div>
+                <div class="form-check disabled">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios5" value="5" />
+                    <label class="form-check-label" for="gridRadios3">Otro</label>
+                </div>
+                </div>
+            </div>
+            </fieldset> --}}
+            <div class="form-group row spacingForm">
+            <div class="form-row mt-10">
+                <div class="col-md-4 mb-3">
+                <label for="validationDefault03">Ciudad</label>
+                <input type="text" class="form-control" id="validationDefault03" name="city" placeholder="Ciudad" required />
+                </div>
+                {{-- <div class="col-md-4 mb-4">
+                <label for="validationDefault04">Provincia</label>
+                <input type="text" class="form-control" id="validationDefault04" placeholder="Provincia" required />
+                </div> --}}
+
+                <div class="col-md-4 mb-3">
+                    <label for="validationDefault03">Provincia</label>
+                    <select name="provincia" class="form-select" aria-label="Default select example">
+                        <option selected>Seleccionar provincia</option>
+                        <option value="1">Capital Federal</option>
+                        <option value="2">Buenos Aires</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-4">
+                <label for="validationDefault05">Código Postal</label>
+                <input type="text" class="form-control" name="cp" id="validationDefault05" placeholder="CP" required />
+                </div>
+            </div>
+            </div>
+            <div id="dynamicAddRemove">
+            <div class="row spacingForm" >
+                    <label for="inputPhone" class="col-sm-2 col-form-label">Teléfono</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="phone[]" placeholder="Ingrese su teléfono" class="form-control" />
+
+                    </div>
+                    <div class="col-sm-2">
+                        {{-- <button type="button" name="add" id="dynamic-ar" class="btn btn-outline-primary spacingForm">Agregar teléfono</button> --}}
+                        {{-- <svg id="dynamic-ar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon line" width="48" height="48"><path id="primary" d="M10,12h4m-2-2v4M17,3H6A1,1,0,0,0,5,4V20a1,1,0,0,0,1,1H18a1,1,0,0,0,1-1V5Zm0,0V5h2Z" style="fill: none; stroke: rgba(0, 104, 255, 0.77); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path></svg> --}}
+                        <svg id="dynamic-ar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon-line" width="35" height="35">
+                            <path id="primary" d="M10,12h4m-2-2v4M5,5V20a1,1,0,0,0,1,1H18a1,1,0,0,0,1-1V4a1,1,0,0,0-1-1H7ZM5,5H7V3Z" style=""></path></svg>
+                    </div>
+            </div>
+            </div>
+            {{-- <table class="table table-bordered" id="dynamicAddRemove">
+            <tr>
+                <td><input type="text" name="addMoreInputFields[0][phone]" placeholder="Enter phone" class="form-control" />
+                </td>
+                <td><button type="button" name="add" id="dynamic-ar" class="btn btn-outline-primary">Add phone</button></td>
+            </tr>
+        </table> --}}
+
+            <div class="form-group row spacingForm">
+            <label for="inputBirthDate" class="col-sm-2 col-form-label">Fecha de nacimiento</label>
+            <div class="col-sm-10">
+                <input type="date" class="form-control" id="inputBirthDate" name="dateOfBirth" placeholder="Ingrese su fecha de nacimiento" />
+            </div>
+            </div>
+            <div class="form-group row spacingForm">
+            <label for="inputReffered" class="col-sm-2 col-form-label">Referido</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputReffered" name="referred" placeholder="Nombre del referido" />
+            </div>
+            </div>
+            <div class="form-group row spacingForm">
+            <div class="col-sm-2">Licencia de conducir</div>
+            <div class="col-sm-10">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="gridCheck1" name="driverLicence" id="driverLicence"  />
+                <label class="form-check-label" for="gridCheck1"> </label>
+                </div>
+            </div>
+            </div>
+            {{-- <div class="form-group row spacingForm">
+            <div class="col-sm-2">Vehículo propio</div>
+            <div class="col-sm-10">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="gridCheck2"  name="carOwner" id="carOwner" />
+                <label class="form-check-label" for="gridCheck2"> </label>
+                </div>
+            </div>
+            </div> --}}
+        </div>
+       </section>
+    <section>
+      <p style="margin-top: 22px"></p>
+      <div style="display: flex; justify-content: space-between">
+        <span class="alert alert-success" role="alert">Estudios</span>
+
+        {{-- <button onclick="myFunction()" style="max-height: 0px; visibility: hidden;">
+            <svg id="add-file-2" data-name="Flat Color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            class="icon flat-color" width="48" height="48" style="visibility: visible;">
+            <path id="primary"
+              d="M19.71,6.29l-4-4A1,1,0,0,0,15,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V7A1,1,0,0,0,19.71,6.29Z"
+              style="fill: rgb(186, 230, 197);"></path>
+            <path id="secondary"
+              d="M12,16a1,1,0,0,1-1-1V13H9a1,1,0,0,1,0-2h2V9a1,1,0,0,1,2,0v2h2a1,1,0,0,1,0,2H13v2A1,1,0,0,1,12,16Z"
+              style="fill: rgb(13, 148, 35);"></path>
+          </svg></button> --}}
+          <button type="button" name="add" id="dynamic-estudios" class="btn btn-outline-primary spacingForm btn-margin-bt">Agregar Estudio</button>
+      </div>
+
+      <p style="margin-top: -30px"></p>
+      <div id="estudios">
+        <div style="border: 1px solid gray" >
+            <fieldset class="form-group">
+            <div class="row spacingForm">
+                <p style="margin-top: 5px"></p>
+                <span class="col-form-label col-sm-2 pt-0 ">Nivel educativo</span>
+                <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" />
+                    <label class="form-check-label" for="gridRadios1">
+                    Primarios
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                    <label class="form-check-label" for="gridRadios2">
+                    Secundarios
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                    <label class="form-check-label" for="gridRadios2">
+                    Terciarios
+                    </label>
+                </div>
+                <div class="form-check disabled">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" />
+                    <label class="form-check-label" for="gridRadios3">
+                    Universitarios
+                    </label>
+                </div>
+                </div>
+            </div>
+            </fieldset>
+            <div class="form-group row spacingForm">
+            <label for="inputEmail3" class="col-sm-2 col-form-label">Carrera</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="inputEmail3" placeholder="Ingrese nombre de su carrera" />
+            </div>
+            </div>
+            <fieldset class="form-group">
+            <div class="row spacingForm">
+                <span class="col-form-label col-sm-2 pt-0">Avance</span>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" />
+                        <label class="form-check-label" for="gridRadios1">Completo</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                        <label class="form-check-label" for="gridRadios2">Cursando</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" />
+                        <label class="form-check-label" for="gridRadios3">Incompleto</label>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
+        </div>
+      </div>
+    </section>
+    <section>
+      <p style="margin-top: 22px"></p>
+      <span class="alert alert-success" role="alert">Adjuntar Curriculum</span>
+      <p style="margin-top: 10px"></p>
+      {{-- <input class="form-control" type="file" name="fileCv" id="formFileMultiple" multiple /> --}}
+
+      <input type="file" name="file" id="inputFile" class="form-control @error('file') is-invalid @enderror">
+      @error('file')
+         <span class="text-danger">{{ $message }}</span>
+      @enderror
+
+      <div class="form-group mt-5"></div>
+      <div class="form-group row mt-20">
+        <div class="col-sm-10 mt-20">
+          <button id="form-btn" class="btn btn-primary mt-20" type="submit">Enviar</button>
+        </div>
+      </div>
+    </section>
+    </div>
+    </form>
+  </div>
+
+
+<!-- JavaScript -->
+<script type="text/javascript" src="{{ asset('/js/sections.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+    var i = 0;
+    $("#dynamic-ar").click(function () {
+        ++i;
+        $("#dynamicAddRemove").append('<div class="row spacingForm"><label for="inputPhone" class="col-sm-2 col-form-label ">Teléfono</label><div class="col-sm-6"><input type="text" name="phone[]" placeholder="Ingrese su teléfono" class="form-control" /></div><div class="col-sm-2"><button type="button" name="add" id="dynamic-ar" class="btn btn-outline-danger remove-input-field">Eliminar</button>'
+            );
+    });
+    $(document).on('click', '.remove-input-field', function () {
+        $(this).closest('.spacingForm').remove();
+    });
+</script>
+
+<script type="text/javascript">
+    var i = 0;
+    $("#dynamic-estudios").click(function () {
+        ++i;
+        $("#estudios").append('<br><div style="border: 1px solid gray" ><fieldset class="form-group"><div class="row spacingForm"><p style="margin-top: 5px"></p><span class="col-form-label col-sm-2 pt-0 ">Nivel educativo</span><div class="col-sm-10"><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" /><label class="form-check-label" for="gridRadios1">Primarios</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Secundarios</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Terciarios</label></div><div class="form-check disabled"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" /><label class="form-check-label" for="gridRadios3">Universitarios</label></div></div></div></fieldset><div class="form-group row spacingForm"><label for="inputEmail3" class="col-sm-2 col-form-label">Carrera</label><div class="col-sm-10"><input type="email" class="form-control" id="inputEmail3" placeholder="Ingrese nombre de su carrera" /></div></div><fieldset class="form-group"><div class="row spacingForm"><span class="col-form-label col-sm-2 pt-0">Avance</span><div class="col-sm-10"><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" /><label class="form-check-label" for="gridRadios1">Completo</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Cursando</label></div></div></div></fieldset></div></div>'
+            );
+    });
+    $(document).on('click', '.remove-input-field', function () {
+        $(this).closest('.spacingForm').remove();
+    });
+</script>
+
+@endsection
+
+
+
+

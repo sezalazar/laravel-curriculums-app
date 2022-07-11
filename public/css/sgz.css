@@ -1,0 +1,154 @@
+:root{
+    --dt-aysa-color: #0F0F76;
+    --dt-sgbatos-color: #109F47;
+    --dt-delete-color: #d11a2a;
+}
+
+
+/* fromPage.css - inicio */
+
+.spacingForm{
+    margin-left: 1px;
+    margin-right: 1px;
+  }
+
+  .logo .sgbatos{
+     height: 100px;
+     margin-left: 60px;
+  }
+  /* fromPage.css - fin */
+
+
+.navbar-light .navbar-brand,.navbar-light .navbar-toggler{
+    color:var(--dt-aysa-color);
+}
+
+.card{
+    border: 0px;
+}
+
+.card-header{
+    background-color: var(--dt-aysa-color);
+    border-radius: 10px !important;
+    color: #fff;
+}
+.flex-gap_sgz {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content:space-between;
+    margin-bottom: 6px;
+  }
+
+  .flex-gap_sgz > div {
+     margin: 6px;
+  }
+
+  .card-img-top{
+    width: 250px;
+    height: 400px;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    /* width: 50%; */
+  }
+
+
+button {
+    height: 35px;
+    /* background-color:var(--dt-aysa-color); */
+}
+
+.btn:not(a){
+    background-color:var(--dt-aysa-color);
+    color:#fff;
+}
+
+
+.separate-cards{
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+a .flex-gap_sgz:hover{
+    opacity: 0.8;
+    box-shadow: 0 10px 5px -5px rgba(31, 31, 31, 0.5);
+    transition: all 0.3s ease;
+    border: 1px solid var(--dt-aysa-color);
+    border-radius: 20px;
+  }
+
+a{
+    text-decoration: none;
+    color: var(--dt-aysa-color);
+}
+
+.btn-link, .p-aux{
+    color: var(--dt-aysa-color);
+}
+
+.p-aux:hover{
+    color: var(--dt-sgbatos-color);
+}
+
+.alert{
+    background-color: var(--dt-aysa-color);
+    color: #fff;
+}
+
+svg{
+    fill: none;
+    stroke: rgb(27, 101, 209);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+}
+
+svg:hover{
+    stroke: blue;
+    fill: var(--dt-sgbatos-color);
+}
+
+.remove-input-field:hover{
+    stroke: blue;
+    fill: var(--dt-delete-color);
+}
+
+.icons:hover{
+    color: red;
+}
+
+
+.aysa-navbar-row{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap ;
+    align-items: center;
+}
+
+.logo{
+    margin: 25px;
+}
+
+/* required fields in form */
+.row.required .control-label:after {
+    content:"*";
+    color:red;
+ }
+
+/* hide arrows in form */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+/* form input background colors */
+.form-control{
+    background-color: #FFF;
+}
+
+#regForm{
+    max-width: 800px;
+    margin: auto;
+}

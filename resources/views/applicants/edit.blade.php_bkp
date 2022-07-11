@@ -1,0 +1,337 @@
+@extends('layouts.aysaLayout')
+
+
+
+@section('aysa-content')
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    <strong>Ups!</strong> Hubo algunos problemas en el formulario.<br><br>
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+@if ($message = Session::get('success'))
+{{-- <div class="alert alert-success">
+    {{ $message
+    }}
+</div> --}}
+<script>
+
+    Swal.fire(
+        'Excelente!',
+        'El curriculum ha sido actualizado!',
+        'success'
+      )
+    </script>
+@endif
+
+
+<div class="container ">
+
+    <form action="{{ route('applicants.update',$cv->id) }}"  method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+      <div id="wizard">
+      <p style="margin-top: 5px"></p>
+      <span class="alert alert-success" role="alert">Datos Personales</span>
+      <p style="margin-top: 10px"></p>
+        <div style="border: 1px solid gray">
+            @include('layouts.formPage')
+                <div class="form-group row spacingForm">
+                    <label for="inputName" class="col-sm-2 col-form-label">Nombre y Apellido</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" name="nombre" placeholder="Ingrese su nombre completo" value="{{ $cv->name }}" />
+                    </div>
+                </div>
+                <div class="form-group row spacingForm">
+                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="inputEmail" name="email" placeholder="Ingrese su email" value="{{ $cv->email }}" />
+                    </div>
+                </div>
+                <div class="form-group row spacingForm">
+                    <label for="inputStreet" class="col-sm-2 col-form-label">Calle</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="Nombre de su calle" name="street" value="{{ $cv->street }}">
+                    </div>
+                </div>
+                <div class="form-group row spacingForm">
+                    <label for="inputStreet" class="col-sm-2 col-form-label">Número de Calle</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" placeholder="Número de su calle" name="streetNbr" value="{{ $cv->streetNbr }}">
+                    </div>
+                </div>
+                <div class="form-group row spacingForm">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="validationDefault03">Ciudad</label>
+                            <input type="text" class="form-control" name="ciudad" placeholder="Ciudad" value="{{ $cv->city }}" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="validationDefault03">Provincia</label>
+                            @php $selected = '' @endphp
+                            <select name="provincia" class="form-select" aria-label="Default select example">
+                                <option
+                                    @if( $cv->provincia == 1 )
+                                        @php $selected = 'selected' @endphp
+                                        {{ $selected }}
+                                    @endif
+                                    value="1"
+                                    selected autocomplete="off">Capital Federal
+                                </option>
+                                <option
+                                    @if( $cv->provincia == 2 )
+                                            @php $selected = 'selected' @endphp
+                                            {{ $selected }}
+                                        @endif
+                                    value="2" autocomplete="off">Buenos Aires</option>
+
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <label for="validationDefault05">Código Postal</label>
+                            <input type="text" class="form-control" name="cp" placeholder="CP" value="{{ $cv->cp }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div id="dynamicAddRemove">
+                    @php $countPhones = 1;
+                    @endphp
+                    @foreach($phones as $key => $phone)
+                    <div class="row spacingForm" >
+                            <label for="inputPhone" class="col-sm-2 col-form-label">Teléfono</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="phone[]" placeholder="Ingrese su teléfono" class="form-control" value="{{ $phone->phone }}"/>
+
+                            </div>
+
+                            @if($countPhones == 1)
+                                <div class="col-sm-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30" id="dynamic-ar">
+                                        <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                                        <path d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"/>
+                                    </svg>
+                                </div>
+                            @else
+                                <div class="col-sm-2">
+                                    {{-- <button type="button"  class="btn btn-outline-danger remove-input-field">
+                                        Eliminar
+                                    </button> --}}
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30" id="dynamic-ar" class="remove-input-field">
+                                        <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                                        <path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/>
+                                    </svg>
+                                </div>
+
+                            @endif
+                            @php
+                                $countPhones++;
+                            @endphp
+
+                    </div>
+                    @endforeach
+                </div>
+
+
+                <div class="form-group row spacingForm">
+                    <label for="inputBirthDate" class="col-sm-2 col-form-label">Fecha de nacimiento</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" id="inputBirthDate" name="fechaDeNacimiento" placeholder="Ingrese su fecha de nacimiento" value="{{ $cv->dateOfBirth }}" />
+                    </div>
+                </div>
+                <div class="form-group row spacingForm " >
+                    <label for="inputReffered" class="col-sm-2 col-form-label">Referido</label>
+                    <div class="col-2">
+                    <input type="text" class="form-control" placeholder="Legajo del referido" name="referredEmplid" value="{{ $cv->referredEmplid }}">
+                    </div>
+
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="inputReffered" name="referredName" placeholder="Nombre del referido" value="{{ $cv->referredName }}" />
+                    </div>
+                </div>
+                <div class="form-group row spacingForm">
+                    <div class="col-sm-2">Licencia de conducir</div>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gridCheck1" name="driverLicence" id="driverLicence"
+                                        @if($cv->driverLicence == 1)
+                                            checked="checked"
+                                        @endif
+                                    />
+                            <label class="form-check-label" for="gridCheck1"> </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+      <p style="margin-top: 22px"></p>
+      <div style="display: flex; justify-content: space-between">
+        <span class="alert alert-success" role="alert">Estudios</span>
+
+        {{-- <button onclick="myFunction()" style="max-height: 0px; visibility: hidden;">
+            <svg id="add-file-2" data-name="Flat Color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            class="icon flat-color" width="48" height="48" style="visibility: visible;">
+            <path id="primary"
+              d="M19.71,6.29l-4-4A1,1,0,0,0,15,2H6A2,2,0,0,0,4,4V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V7A1,1,0,0,0,19.71,6.29Z"
+              style="fill: rgb(186, 230, 197);"></path>
+            <path id="secondary"
+              d="M12,16a1,1,0,0,1-1-1V13H9a1,1,0,0,1,0-2h2V9a1,1,0,0,1,2,0v2h2a1,1,0,0,1,0,2H13v2A1,1,0,0,1,12,16Z"
+              style="fill: rgb(13, 148, 35);"></path>
+          </svg></button> --}}
+          <button type="button" name="add" id="dynamic-estudios" class="btn btn-outline-primary spacingForm btn-margin-bt">Agregar Estudio</button>
+      </div>
+
+      <p style="margin-top: -30px"></p>
+      <div id="estudios">
+        <div style="border: 1px solid gray" >
+            <fieldset class="form-group">
+            <div class="row spacingForm">
+                <p style="margin-top: 5px"></p>
+                <span class="col-form-label col-sm-2 pt-0 ">Nivel educativo</span>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" />
+                        <label class="form-check-label" for="gridRadios1">
+                        Primarios
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                        <label class="form-check-label" for="gridRadios2">
+                        Secundarios
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                        <label class="form-check-label" for="gridRadios2">
+                        Terciarios
+                        </label>
+                    </div>
+                    <div class="form-check disabled">
+                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" />
+                        <label class="form-check-label" for="gridRadios3">
+                        Universitarios
+                        </label>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
+            <div class="form-group row spacingForm">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Carrera</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Ingrese nombre de su carrera" />
+                </div>
+            </div>
+            <fieldset class="form-group">
+                <div class="row spacingForm">
+                    <span class="col-form-label col-sm-2 pt-0">Avance</span>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" />
+                            <label class="form-check-label" for="gridRadios1">Completo</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" />
+                            <label class="form-check-label" for="gridRadios2">Cursando</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" />
+                            <label class="form-check-label" for="gridRadios3">Incompleto</label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+      </div>
+        <p style="margin-top: 22px"></p>
+        <span class="alert alert-success" role="alert">Adjuntar Curriculum</span>
+        <p style="margin-top: 10px"></p>
+        <div id="archivo">
+            <div style="border: 1px solid gray" >
+                <p style="margin-top: 10px"></p>
+                <div class="form-group row spacingForm  align-items-center spacingForm">
+                    <div class="col-auto">
+                        <label class="form-check-label" for="form11Example4">
+                            Último CV subido:
+                        </label>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ asset('uploads/' . $cv->filename) }}">
+                            <svg id="file-13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon line" width="35" height="35"><path id="primary" d="M6,21a1,1,0,0,1-1-1V7L9,3h9a1,1,0,0,1,1,1V20a1,1,0,0,1-1,1Zm9-4H9m6-4H9m6-4H9" style="fill: none; stroke: rgba(0, 104, 255, 0.77); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="replaceCV" onchange="valueChanged()" />
+                        <label class="form-check-label" for="form11Example2"> Reemplazar </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3 spacingForm">
+                    <input type="file" name="file" id="inputFile" class=" form-control  file-loading col spacingForm @error('file') is-invalid @enderror" value="{{ asset('uploads/' . $cv->filename) }}"  style="display:none;"  >
+                    @error('file')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                </div>
+        </div>
+    <div class="form-group mt-5"></div>
+        <div class="form-group row mt-20 ">
+            <div class="col-sm-10 mt-20">
+                <button id="form-btn" class="btn btn-primary mt-20" type="submit">Enviar</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    </form>
+  </div>
+
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    var i = 0;
+    $("#dynamic-ar").click(function () {
+        ++i;
+        $("#dynamicAddRemove").append('<div class="row spacingForm"><label for="inputPhone" class="col-sm-2 col-form-label ">Teléfono</label><div class="col-sm-6"><input type="text" name="phone[]" placeholder="Ingrese su teléfono" class="form-control" /></div><div class="col-sm-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="30" height="30" id="dynamic-ar" class="remove-input-field"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M135.2 17.69C140.6 6.848 151.7 0 163.8 0H284.2C296.3 0 307.4 6.848 312.8 17.69L320 32H416C433.7 32 448 46.33 448 64C448 81.67 433.7 96 416 96H32C14.33 96 0 81.67 0 64C0 46.33 14.33 32 32 32H128L135.2 17.69zM31.1 128H416V448C416 483.3 387.3 512 352 512H95.1C60.65 512 31.1 483.3 31.1 448V128zM111.1 208V432C111.1 440.8 119.2 448 127.1 448C136.8 448 143.1 440.8 143.1 432V208C143.1 199.2 136.8 192 127.1 192C119.2 192 111.1 199.2 111.1 208zM207.1 208V432C207.1 440.8 215.2 448 223.1 448C232.8 448 240 440.8 240 432V208C240 199.2 232.8 192 223.1 192C215.2 192 207.1 199.2 207.1 208zM304 208V432C304 440.8 311.2 448 320 448C328.8 448 336 440.8 336 432V208C336 199.2 328.8 192 320 192C311.2 192 304 199.2 304 208z"/></svg></div></div>'
+            );
+    });
+    $(document).on('click', '.remove-input-field', function () {
+        $(this).closest('.spacingForm').remove();
+    });
+</script>
+
+<script type="text/javascript">
+    var i = 0;
+    $("#dynamic-estudios").click(function () {
+        ++i;
+        $("#estudios").append('<br><div style="border: 1px solid gray" ><fieldset class="form-group"><div class="row spacingForm"><p style="margin-top: 5px"></p><span class="col-form-label col-sm-2 pt-0 ">Nivel educativo</span><div class="col-sm-10"><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" /><label class="form-check-label" for="gridRadios1">Primarios</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Secundarios</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Terciarios</label></div><div class="form-check disabled"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" /><label class="form-check-label" for="gridRadios3">Universitarios</label></div></div></div></fieldset><div class="form-group row spacingForm"><label for="inputEmail3" class="col-sm-2 col-form-label">Carrera</label><div class="col-sm-10"><input type="email" class="form-control" id="inputEmail3" placeholder="Ingrese nombre de su carrera" /></div></div><fieldset class="form-group"><div class="row spacingForm"><span class="col-form-label col-sm-2 pt-0">Avance</span><div class="col-sm-10"><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" /><label class="form-check-label" for="gridRadios1">Completo</label></div><div class="form-check"><input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" /><label class="form-check-label" for="gridRadios2">Cursando</label></div></div></div></fieldset></div></div>'
+            );
+    });
+    $(document).on('click', '.remove-input-field', function () {
+        $(this).closest('.spacingForm').remove();
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(function (){
+        $('#replaceCV').on("click", function(){
+            $(".file-loading").toggle(this.checked);
+        });
+
+    });
+</script>
+
+@endsection
+
+
