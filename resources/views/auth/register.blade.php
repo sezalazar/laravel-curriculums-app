@@ -1,4 +1,10 @@
 @extends('layouts.app')
+
+@section('app.head.content')
+{{-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-alpha1/css/bootstrap.min.css"> --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -57,6 +63,31 @@
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="captcha" class="col-md-4 col-form-label text-md-end"></label>
+                            <div class="col-md-6">
+                                <div class="captcha">
+                                    <span>{!! captcha_img() !!}</span>
+                                    <button type="button" class="btn btn-danger" class="reload" id="reload">
+                                        &#x21bb;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="captcha" class="col-md-4 col-form-label text-md-end">Captcha</label>
+                            <div class="col-md-6">
+                                <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha">
+
+                                @if ($errors->has('captcha'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('captcha') }}</strong>
+                                </span>
+                                @endif
                             </div>
                         </div>
 

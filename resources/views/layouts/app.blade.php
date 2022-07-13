@@ -19,6 +19,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sgz.css') }}" rel="stylesheet">
+    @yield('app.head.content')
 </head>
 <body>
     <div id="app">
@@ -80,5 +81,17 @@
             @yield('content')
         </main>
     </div>
+    <script type="text/javascript">
+        $('#reload').click(function () {
+            console.log('reload');
+            $.ajax({
+                type: 'GET',
+                url: 'reload-captcha',
+                success: function (data) {
+                    $(".captcha span").html(data.captcha);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -91,6 +91,12 @@ return [
     'not_in' => 'El campo seleccionado :attribute es inválido.',
     'not_regex' => 'El formato de :attribute es inválido.',
     'numeric' => 'El campo :attribute debe ser numérico',
+    'password' => [
+        'letters' => 'La :attribute debe contener al menos una letra.',
+        'mixed' => 'La :attribute debe contener al menos una letra en mayúscula y al menos una letra en minúscula.',
+        'numbers' => 'La :attribute contraseña debe contener al menos un dígito.',
+        'symbols' => 'La :attribute debe contener al menos un símbolo.',
+    ],
     'present' => 'El campo :attribute field debe estar presente.',
     'regex' => 'El campo :attribute format es inválido.',
     'required' => 'El campo :attribute es obligatorio.',

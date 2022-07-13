@@ -118,7 +118,7 @@
 
 
 
-                <option>--Provincia--</option>
+                <option value="">--Provincia--</option>
                         @foreach ($provincias as $provincia)
                             <option value="{{ $provincia->nombre }}"
                                 @if(old('provincia'))

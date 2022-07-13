@@ -30,12 +30,12 @@ class FormDataRequest extends FormRequest
             'dni' => 'required|integer|min:0|max:99999999|unique:applicants,dni,' . $this->route()->id,
             'name' => 'required',
             'email' => 'required|unique:applicants,email,' . $this->route()->id,
-            'dateOfBirth' => 'required',
-            'ciudad' => 'required',
-            'provincia' => 'required',
+            'dateOfBirth' => 'required|before:yesterday',
+            'provincia' => 'required|filled',
+            'ciudad' => 'required_with:provincia',
             'cp' => 'required',
             'street' => 'required',
-            'streetNbr' => 'required',
+            'streetNbr' => 'required|numeric',
             'phone.*' => 'required|min:9|regex:/^([0-9\s\-\+\(\)]*)$/',
         ];
     }
